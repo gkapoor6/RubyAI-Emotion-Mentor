@@ -4,13 +4,12 @@ Application that provides real-time emotion analysis through real-time audio rec
 
 ## Features
 
-- Audio recording reception via HTTP POST endpoint
+- Real-time audio reception every 5-seconds from the Omi wearable device
 - Emotion analysis using Hume AI's prosody model
 - Web interface for viewing emotion analysis results
-- Real-time processing of 5-second audio clips from Omi wearable
+- Real-time processing of audio clips
 - Support for WAV audio format (16-bit, mono, 16kHz)
-- Local deployment with Flask
-- Public deployment option using ngrok
+- Local deployment using Flask; Public deployment using ngrok
 
 ## Prerequisites
 
