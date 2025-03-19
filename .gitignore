@@ -40,4 +40,10 @@ audio_files/
 emotion_results/
 
 # Mac
-.DS_Store 
+.DS_Store
+
+# Vercel
+.vercel
+.now
+node_modules/
+.env*.local 

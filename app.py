@@ -5,25 +5,37 @@ import wave
 import logging
 import json
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('omi_server.log'),
+        logging.FileHandler('omi_server.log') if not os.getenv('VERCEL_ENV') else logging.StreamHandler(),
         logging.StreamHandler()
     ]
 )
 
 app = Flask(__name__)
 
-# Create directories if they don't exist
-AUDIO_DIR = "audio_files"
-RESULTS_DIR = "emotion_results"
-for directory in [AUDIO_DIR, RESULTS_DIR]:
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+# Create directories if they don't exist and we're not on Vercel
+if not os.getenv('VERCEL_ENV'):
+    AUDIO_DIR = "audio_files"
+    RESULTS_DIR = "emotion_results"
+    for directory in [AUDIO_DIR, RESULTS_DIR]:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+else:
+    # On Vercel, use temporary storage
+    AUDIO_DIR = "/tmp/audio_files"
+    RESULTS_DIR = "/tmp/emotion_results"
+    for directory in [AUDIO_DIR, RESULTS_DIR]:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
 @app.route('/')
 def home():
@@ -46,10 +58,18 @@ def show_emotions():
             filename = json_file.stem  # e.g., audio_20250318_161126_emotions
             parts = filename.split('_')
             if len(parts) >= 3:
-                date_part = parts[1]  # YYYYMMDD
-                time_part = parts[2]  # HHMMSS
-                timestamp_str = f"{date_part[:4]}-{date_part[4:6]}-{date_part[6:]} {time_part[:2]}:{time_part[2:4]}:{time_part[4:]}"
-                timestamp = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
+                date_str = parts[1]  # YYYYMMDD
+                time_str = parts[2]  # HHMMSS
+                
+                # Format the date string properly
+                year = date_str[:4]
+                month = date_str[4:6]
+                day = date_str[6:]
+                hour = time_str[:2]
+                minute = time_str[2:4]
+                second = time_str[4:6]
+                
+                timestamp = datetime.strptime(f"{year}-{month}-{day} {hour}:{minute}:{second}", '%Y-%m-%d %H:%M:%S')
                 formatted_timestamp = timestamp.strftime('%B %d, %Y at %I:%M:%S %p')
                 
                 # Process emotions data
@@ -117,6 +137,23 @@ def receive_audio():
         logging.error(f"Error processing audio: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+# Health check endpoint for Vercel
+@app.route('/health')
+def health_check():
+    return jsonify({"status": "healthy"}), 200
+
 if __name__ == '__main__':
-    logging.info("Starting Omi Audio Streaming Server...")
-    app.run(host='0.0.0.0', port=8000, debug=True) 
+    port = int(os.getenv('PORT', 8000))
+    if os.getenv('VERCEL_ENV'):
+        app.run()
+    else:
+        # Try different ports if the default is in use
+        while port < 8010:
+            try:
+                app.run(host='0.0.0.0', port=port, debug=True)
+                break
+            except OSError:
+                logging.warning(f"Port {port} is in use, trying port {port + 1}")
+                port += 1
+        if port == 8010:
+            logging.error("Could not find an available port between 8000 and 8009") 
