@@ -1,6 +1,6 @@
-# Omi - Emotion Analysis Server
+# Omi - Emotion Mentor
 
-A Flask-based server that receives audio recordings from the Omi wearable device and analyzes emotions using the Hume AI SDK. The server provides real-time emotion analysis results through a web interface.
+A Flask-based server that receives real-time audio recordings from the Omi wearable device and analyzes emotions using the Hume AI SDK (Expression Measurement API). The server provides real-time emotion analysis results through a web interface.
 
 ## Features
 
