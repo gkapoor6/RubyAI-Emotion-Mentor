@@ -1,8 +1,8 @@
 # Ruby - Your Emotion Mentor
 
-Uncover authentic feelings that underlie your spoken words. Ruby goes beyond words to analyze your emotional tone, speech pattern, and rhythm. It captures the authentic feelings that underlie your spoken words — helping you become aware of emotions you may be feeling but not even realize that you are. 
+Uncover authentic feelings that go beyond your spoken words. Ruby analyzes your emotional tone, speech pattern, and rhythm to help you become aware of emotions you may be feeling but not even realize that you are. 
 
-Technical description: Real-time emotion analysis through audio recordings from the Omi wearable device. It uses the Hume AI SDK (Expression Measurement API) for emotional expression measurement in voice data. 
+Real-time emotion analysis through audio recordings from the Omi wearable device. It uses the Hume AI SDK for emotional expression measurement in voice data. 
 
 ## Features
 
