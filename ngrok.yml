@@ -1,0 +1,6 @@
+version: "2"
+authtoken: 2uVdXoGBmkHn37Ry8gbHJqc1ZFN_2FXAE16qv24tqY27cpxoX
+tunnels:
+  omi:
+    proto: http
+    addr: 8000
