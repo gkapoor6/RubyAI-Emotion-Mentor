@@ -1,4 +1,4 @@
-# Omi - Emotion Mentor
+# Ruby - Emotion Mentor
 
 Application that provides real-time emotion analysis through audio recordings from the Omi wearable device. It uses the Hume AI SDK (Expression Measurement API) for emotional expression measurement in voice data. 
 
