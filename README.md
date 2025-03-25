@@ -4,7 +4,7 @@ Uncover authentic feelings that go beyond your spoken words. Ruby analyzes your 
 
 Real-time emotion analysis through audio recordings from the Omi wearable device. It uses the Hume AI SDK for emotional expression measurement in voice data. 
 
-![Emotions Graph](docs/emotions_graph.png)
+![Emotions Graph](docs/b33e899a-fb11-4481-b4ec-c6cd436d8ced.jpeg)
 
 ## Features
 
