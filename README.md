@@ -1,6 +1,8 @@
 # Ruby - Emotion Mentor
 
-Application that provides real-time emotion analysis through audio recordings from the Omi wearable device. It uses the Hume AI SDK (Expression Measurement API) for emotional expression measurement in voice data. 
+Ruby focuses on your vocal expression and prosody to derive insights beyond just the words that you are saying. By analyzing speech patterns, rhythm, and emotional tone, we capture the authentic feelings that underlie your spoken words — helping you become aware of emotions you may be feeling but not even realize
+
+Ruby provides real-time emotion analysis through audio recordings from the Omi wearable device. It uses the Hume AI SDK (Expression Measurement API) for emotional expression measurement in voice data. 
 
 ## Features
 
