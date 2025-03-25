@@ -2,84 +2,147 @@
 <html>
 <head>
     <title>Emotion Analysis Results</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --chart-1: 200, 100%, 50%;
-            --chart-2: 150, 100%, 50%;
-            --chart-3: 100, 100%, 50%;
-            --chart-4: 50, 100%, 50%;
-            --chart-5: 0, 100%, 50%;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
-        .card {
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=2070') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: #fff;
+            font-family: var(--font-primary);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
             margin: 1rem;
-            padding: 1.5rem;
         }
 
         .chart-container {
             position: relative;
             height: 400px;
             width: 100%;
+            margin-top: 2rem;
         }
 
         .select-container {
             display: flex;
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
         }
 
         select {
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            border: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        select option {
+            background: #2d3748;
+            color: white;
         }
 
         .emotion-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
         }
 
         .emotion-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .emotion-color {
-            width: 12px;
-            height: 12px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
+        }
+
+        .emotion-score {
+            margin-left: auto;
+            font-family: var(--font-primary);
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+
+        /* Modern circular progress style */
+        .progress-ring {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            background: conic-gradient(from 0deg, var(--progress-color) var(--progress), transparent var(--progress));
+            position: relative;
+        }
+
+        .progress-ring::before {
+            content: '';
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-900">
     <div class="container mx-auto px-4 py-8">
-        <div class="card">
-            <h1 class="text-2xl font-bold mb-2">Emotion Analysis Results</h1>
-            <p class="text-gray-600 mb-6">Analyzing emotions in your real-time voice data from the Omi AI wearable.</p>
-            
-            <div class="select-container">
+        <div class="glass-card">
+            <div class="flex items-center justify-between mb-6">
                 <div>
-                    <label class="text-sm font-medium">View:</label>
-                    <select id="viewType" onchange="updateChart()">
-                        <option value="all">All Emotions</option>
-                        <option value="top5">Top 5 Only</option>
-                    </select>
+                    <h1 class="text-3xl font-bold mb-2">Your Emotions Today</h1>
+                    <p class="text-gray-300">Track your emotional state throughout the day</p>
                 </div>
-                <div>
-                    <label class="text-sm font-medium">Time:</label>
-                    <select id="timeFilter" onchange="updateChart()">
-                        <option value="all">All Times</option>
-                        {% for result in results %}
-                        <option value="{{ result.timestamp }}">{{ result.timestamp }}</option>
-                        {% endfor %}
+                <div class="select-container">
+                    <select id="viewType" onchange="updateChart()" class="bg-transparent">
+                        <option value="line">Timeline View</option>
                     </select>
                 </div>
             </div>
@@ -89,57 +152,156 @@
             </div>
 
             <div class="emotion-list" id="currentEmotions">
-                {% for result in results %}
-                <div class="result-card mb-4">
-                    <h3 class="text-lg font-semibold mb-2">{{ result.timestamp }}</h3>
-                    {% for emotion in result.emotions %}
-                    <div class="emotion-item">
-                        <div class="emotion-color" style="background-color: hsl({{ loop.index0 * 50 }}, 70%, 50%)"></div>
-                        <span class="font-medium">{{ emotion.name }}</span>
-                        <span class="text-gray-600">{{ "%.3f"|format(emotion.score) }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endfor %}
             </div>
         </div>
     </div>
 
     <script>
-        const emotionData = {{ results|tojson|safe }};
+        let emotionData = [];
         let chart = null;
 
+        // Function to fetch emotion data
+        async function fetchEmotionData() {
+            try {
+                const response = await fetch('/emotions');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const newData = await response.json();
+                
+                // Check if data has actually changed
+                if (JSON.stringify(newData) !== JSON.stringify(emotionData)) {
+                    emotionData = newData;
+                    console.log('Emotion Data Updated:', emotionData);
+                    
+                    // Create or update chart
+                    createChart(emotionData);
+                    
+                    // Update emotion list
+                    updateEmotionList(emotionData);
+                } else {
+                    console.log('No new emotion data');
+                }
+            } catch (error) {
+                console.error('Error fetching emotion data:', error);
+            }
+        }
+
+        // Function to update emotion list
+        function updateEmotionList(data) {
+            const emotionList = document.getElementById('currentEmotions');
+            emotionList.innerHTML = '';
+            
+            data.forEach(result => {
+                const resultCard = document.createElement('div');
+                resultCard.className = 'result-card';
+                
+                const header = document.createElement('div');
+                header.className = 'flex items-center justify-between mb-4';
+                
+                const timestamp = document.createElement('h3');
+                timestamp.className = 'text-xl font-semibold text-white';
+                timestamp.textContent = result.timestamp;
+                
+                // Create a summary ring showing the top emotion's intensity
+                const topEmotion = result.emotions[0];
+                const summaryRing = document.createElement('div');
+                summaryRing.className = 'progress-ring';
+                summaryRing.style.setProperty('--progress', `${topEmotion.score * 360}deg`);
+                summaryRing.style.setProperty('--progress-color', getEmotionColor(topEmotion.name));
+                summaryRing.textContent = `${Math.round(topEmotion.score * 100)}%`;
+                
+                header.appendChild(timestamp);
+                header.appendChild(summaryRing);
+                resultCard.appendChild(header);
+                
+                const emotionsContainer = document.createElement('div');
+                emotionsContainer.className = 'space-y-2';
+                
+                result.emotions.forEach((emotion, index) => {
+                    if (emotion.score > 0) {
+                        const emotionItem = document.createElement('div');
+                        emotionItem.className = 'emotion-item';
+                        
+                        const colorDot = document.createElement('div');
+                        colorDot.className = 'emotion-color';
+                        colorDot.style.backgroundColor = getEmotionColor(emotion.name);
+                        
+                        const name = document.createElement('span');
+                        name.className = 'text-white/90';
+                        name.textContent = emotion.name;
+                        
+                        const score = document.createElement('span');
+                        score.className = 'emotion-score text-white/70';
+                        score.textContent = `${Math.round(emotion.score * 100)}%`;
+                        
+                        emotionItem.appendChild(colorDot);
+                        emotionItem.appendChild(name);
+                        emotionItem.appendChild(score);
+                        emotionsContainer.appendChild(emotionItem);
+                    }
+                });
+                
+                resultCard.appendChild(emotionsContainer);
+                emotionList.appendChild(resultCard);
+            });
+        }
+
+        // Function to create/update chart
         function createChart(data) {
-            const ctx = document.getElementById('emotionChart').getContext('2d');
-            const viewType = document.getElementById('viewType').value;
-            const timeFilter = document.getElementById('timeFilter').value;
+            console.log('Creating chart with data:', data);
+            if (!data || data.length === 0) {
+                console.log('No data available for chart');
+                return;
+            }
 
-            // Filter data based on selected time
-            const filteredData = timeFilter === 'all' ? data : data.filter(d => d.timestamp === timeFilter);
+            const canvas = document.getElementById('emotionChart');
+            if (!canvas) {
+                console.error('Could not find chart canvas element');
+                return;
+            }
 
-            // Prepare data for chart
-            const labels = filteredData.map(d => d.timestamp);
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Could not get 2d context from canvas');
+                return;
+            }
+
+            try {
+                // Get all unique emotions across all timestamps
+                const allEmotions = new Set();
+                data.forEach(d => {
+                    if (d.emotions) {
+                        d.emotions.forEach(e => e.name && allEmotions.add(e.name));
+                    }
+                });
+                const emotionsList = Array.from(allEmotions);
+
+                // Create line chart
+                createLineChart(ctx, data, emotionsList);
+            } catch (error) {
+                console.error('Error creating chart:', error);
+            }
+        }
+
+        function createLineChart(ctx, data, allEmotions) {
+            const labels = data.map(d => d.timestamp);
             const datasets = [];
             const colors = [
-                'hsl(200, 70%, 50%)',
-                'hsl(150, 70%, 50%)',
-                'hsl(100, 70%, 50%)',
-                'hsl(50, 70%, 50%)',
-                'hsl(0, 70%, 50%)'
+                'rgb(147, 51, 234)',  // Purple
+                'rgb(59, 130, 246)',  // Blue
+                'rgb(16, 185, 129)',  // Green
+                'rgb(245, 158, 11)',  // Orange
+                'rgb(239, 68, 68)',   // Red
+                'rgb(236, 72, 153)',  // Pink
+                'rgb(67, 56, 202)',   // Indigo
+                'rgb(245, 158, 11)'   // Amber
             ];
 
-            // Get all unique emotions
-            const allEmotions = new Set();
-            filteredData.forEach(d => {
-                d.emotions.forEach(e => allEmotions.add(e.name));
-            });
-
             // Create datasets for each emotion
-            Array.from(allEmotions).forEach((emotion, index) => {
-                if (viewType === 'top5' && index >= 5) return;
-
-                const emotionData = filteredData.map(d => {
-                    const emotionEntry = d.emotions.find(e => e.name === emotion);
+            allEmotions.forEach((emotion, index) => {
+                const emotionData = data.map(d => {
+                    const emotionEntry = d.emotions && d.emotions.find(e => e.name === emotion);
                     return emotionEntry ? emotionEntry.score : 0;
                 });
 
@@ -148,7 +310,12 @@
                     data: emotionData,
                     backgroundColor: colors[index % colors.length],
                     borderColor: colors[index % colors.length],
-                    borderWidth: 1
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    backgroundColor: `${colors[index % colors.length]}33`, // Add transparent fill
                 });
             });
 
@@ -157,9 +324,9 @@
                 chart.destroy();
             }
 
-            // Create new chart
+            // Create new line chart
             chart = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: datasets
@@ -167,62 +334,145 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Emotion Intensity'
+                            max: 1.0,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    size: 12,
+                                    family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                                },
+                                callback: function(value) {
+                                    return (value * 100) + '%';
+                                }
                             }
                         },
                         x: {
-                            title: {
-                                display: true,
-                                text: 'Time'
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    size: 12,
+                                    family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                                },
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 8
                             }
                         }
                     },
                     plugins: {
                         legend: {
                             position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                font: {
+                                    size: 12,
+                                    family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                                }
+                            }
                         },
                         title: {
-                            display: true,
-                            text: 'Emotion Analysis Over Time'
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: 'rgba(255, 255, 255, 0.9)',
+                            bodyColor: 'rgba(255, 255, 255, 0.9)',
+                            bodyFont: {
+                                family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                            },
+                            titleFont: {
+                                family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                                weight: '600'
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            mode: 'index',
+                            filter: function(tooltipItem) {
+                                return tooltipItem.parsed.y > 0;
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`;
+                                }
+                            }
+                        },
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'x'
+                            },
+                            zoom: {
+                                wheel: {
+                                    enabled: true
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                mode: 'x'
+                            }
                         }
                     }
                 }
             });
         }
 
+        function getEmotionColor(emotion) {
+            const colors = {
+                'Excitement': 'rgb(239, 68, 68)',    // Red
+                'Interest': 'rgb(59, 130, 246)',     // Blue
+                'Amusement': 'rgb(16, 185, 129)',    // Green
+                'Determination': 'rgb(147, 51, 234)', // Purple
+                'Satisfaction': 'rgb(245, 158, 11)',  // Orange
+                'Neutral': 'rgb(156, 163, 175)',     // Gray
+                'default': 'rgb(209, 213, 219)'      // Light Gray
+            };
+            return colors[emotion] || colors.default;
+        }
+
+        // Register the zoom plugin when Chart.js is loaded
+        window.addEventListener('load', function() {
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded');
+                return;
+            }
+            
+            if (typeof ChartZoom !== 'undefined') {
+                Chart.register(ChartZoom);
+            } else {
+                console.warn('ChartZoom plugin not loaded');
+            }
+            
+            // Initial data fetch
+            fetchEmotionData();
+        });
+
         function updateChart() {
             createChart(emotionData);
         }
 
-        // Initial chart creation
-        document.addEventListener('DOMContentLoaded', () => {
-            createChart(emotionData);
-        });
-
         // Auto-refresh every 30 seconds
-        setInterval(() => {
-            fetch(window.location.href)
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newEmotions = doc.getElementById('currentEmotions').innerHTML;
-                    document.getElementById('currentEmotions').innerHTML = newEmotions;
-                    
-                    // Update the chart with new data
-                    const scriptTag = doc.querySelector('script');
-                    const newDataMatch = scriptTag.textContent.match(/const emotionData = (.*?);/);
-                    if (newDataMatch) {
-                        const newData = JSON.parse(newDataMatch[1]);
-                        createChart(newData);
-                    }
-                });
-        }, 30000);
+        setInterval(fetchEmotionData, 30000);
     </script>
 </body>
 </html> 
