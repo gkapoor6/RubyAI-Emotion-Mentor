@@ -64,6 +64,25 @@ def get_timestamp_from_filename(filename):
         return datetime.strptime(f"{year}-{month}-{day} {hour}:{minute}:{second}", '%Y-%m-%d %H:%M:%S')
     return None
 
+def get_deterministic_random_sample(files, interval_key, n=5):
+    """Get a random but deterministic sample of files using interval as seed."""
+    # Create a seed from the interval timestamp
+    seed_str = interval_key.strftime('%Y%m%d%H%M')
+    seed = int(seed_str)
+    
+    # Create a new Random instance with the fixed seed
+    rng = random.Random(seed)
+    
+    # Convert to list since we need to use it twice
+    files_list = list(files)
+    
+    # If we have fewer files than requested, return all
+    if len(files_list) <= n:
+        return files_list
+        
+    # Get deterministic random sample
+    return rng.sample(files_list, n)
+
 @app.route('/emotions')
 def show_emotions():
     results = []
@@ -122,27 +141,16 @@ def show_emotions():
     
     # Process each interval group
     for interval, files in sorted(interval_groups.items(), reverse=True):
-        # Sort files by timestamp within interval
-        sorted_files = sorted(files, key=lambda x: x[0])
-        
-        # If more than 5 files in the interval, take evenly spaced samples
-        selected_files = []
-        if len(sorted_files) > 5:
-            step = len(sorted_files) // 5
-            for i in range(0, len(sorted_files), step):
-                if len(selected_files) < 5:  # Ensure we don't get more than 5
-                    selected_files.append(sorted_files[i][1])
-        else:
-            selected_files = [f[1] for f in sorted_files]
-        
-        logging.info(f"Processing interval {interval} with {len(selected_files)} files")
+        # Get deterministic random sample using interval as seed
+        selected_files = get_deterministic_random_sample(files, interval)
+        logging.info(f"Selected {len(selected_files)} random files for interval {interval}")
         
         # Find the file with highest emotion intensity in this interval
         max_intensity = 0
         max_intensity_file = None
         max_intensity_data = None
         
-        for json_file in selected_files:
+        for timestamp, json_file in selected_files:
             try:
                 with open(json_file, 'r') as f:
                     data = json.load(f)
@@ -343,7 +351,7 @@ def health_check():
     return jsonify({"status": "healthy"}), 200
 
 def process_unprocessed_audio_files():
-    """Process 5 random files per 20-minute interval from today's audio files."""
+    """Process random but deterministic sample of files per 20-minute interval from today's audio files."""
     try:
         audio_dir = Path(AUDIO_DIR)
         results_dir = Path(RESULTS_DIR)
@@ -401,9 +409,9 @@ def process_unprocessed_audio_files():
             
         # Process each interval group
         for interval, files in sorted(interval_groups.items(), reverse=True):
-            # Randomly select up to 5 files from this interval
-            selected_files = random.sample(files, min(5, len(files)))
-            logging.info(f"Selected {len(selected_files)} files for interval {interval}")
+            # Get deterministic random sample using interval as seed
+            selected_files = get_deterministic_random_sample(files, interval)
+            logging.info(f"Selected {len(selected_files)} random files for interval {interval}")
             
             # Process only unprocessed files
             for audio_file in selected_files:
