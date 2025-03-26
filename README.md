@@ -31,5 +31,5 @@ Real-time emotion analysis through audio recordings from the Omi wearable device
 
 1. Configure your Omi wearable to send audio data to your server:
 2. The Omi device will send 5-second audio clips to your server
-3. 5 randomly chosen clips in every 20-min interval will be processed for emotion analysis using Hume AI's Expression Measurement API
+3. 5 randomly chosen clips in every 20-min interval will be processed for emotion analysis using Hume AI's Expression Measurement API. 1 of those will be displayed on the emotion chart for better readability.
 4. View the results in real-time at the `/emotions/view` endpoint
