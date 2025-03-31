@@ -42,8 +42,10 @@ else:
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
+    if request.method == 'POST':
+        return receive_audio()
     return render_template('emotions.html', results=[])
 
 def get_timestamp_from_filename(filename):
