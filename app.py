@@ -89,17 +89,18 @@ def get_deterministic_random_sample(files, interval_key, n=5):
 def show_emotions():
     results = []
     results_dir = Path(RESULTS_DIR)
-    today = datetime.now().strftime('%Y%m%d')
+    today = datetime.now()
+    yesterday = today - timedelta(days=1)
     
-    # Get all JSON files in the results directory from today
+    # Get all JSON files in the results directory from today and yesterday
     json_files = sorted(
         [f for f in results_dir.glob('*_emotions.json') 
-         if f.stem.split('_')[1] == today],
+         if f.stem.split('_')[1] in [today.strftime('%Y%m%d'), yesterday.strftime('%Y%m%d')]],
         reverse=True
     )
     
     if not json_files:
-        logging.info("No emotion results found for today")
+        logging.info("No emotion results found for today or yesterday")
         return jsonify([])
     
     # Group files by 20-minute intervals
@@ -164,6 +165,11 @@ def show_emotions():
                     
                 # Process files with valid emotion data
                 if isinstance(data, dict) and 'prosody' in data:
+                    # Check for no speech detected warning
+                    if 'warning' in data['prosody'] and 'No speech detected' in data['prosody']['warning']:
+                        logging.info(f"File has no speech detected: {json_file}")
+                        continue
+                        
                     predictions = data['prosody'].get('predictions', [])
                     if predictions and len(predictions) > 0:
                         prediction = predictions[0]
@@ -201,7 +207,8 @@ def show_emotions():
                     second = time_str[4:6]
                     
                     timestamp = datetime.strptime(f"{year}-{month}-{day} {hour}:{minute}:{second}", '%Y-%m-%d %H:%M:%S')
-                    formatted_timestamp = timestamp.strftime('%-I:%M %p')
+                    # Format timestamp to include date for all entries using a compatible format
+                    formatted_timestamp = timestamp.strftime('%b %d, %I:%M %p')
                     
                     # Get emotions from the file with highest intensity
                     predictions = max_intensity_data['prosody'].get('predictions', [])
@@ -331,14 +338,88 @@ def receive_audio():
 @app.route('/emotions/insights')
 def get_insights():
     try:
-        # Get emotion data from the /emotions endpoint
-        with app.test_client() as client:
-            response = client.get('/emotions')
-            emotion_data = json.loads(response.data)
+        # Get the emotion data from today and yesterday
+        results = []
+        results_dir = Path(RESULTS_DIR)
+        today = datetime.now()
+        yesterday = today - timedelta(days=1)
         
-        # Generate insights using Claude
-        insights = get_emotion_insights(emotion_data)
-        return jsonify(insights)
+        # Get all JSON files in the results directory from today and yesterday
+        json_files = sorted(
+            [f for f in results_dir.glob('*_emotions.json') 
+             if f.stem.split('_')[1] in [today.strftime('%Y%m%d'), yesterday.strftime('%Y%m%d')]],
+            reverse=True
+        )
+        
+        if not json_files:
+            logging.info("No emotion results found for today or yesterday")
+            return jsonify({
+                "error": "No emotion data available for analysis",
+                "timestamp": datetime.now().strftime("%I:%M %p")
+            })
+        
+        # Process each file to get emotions
+        for json_file in json_files:
+            try:
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+                
+                if isinstance(data, dict) and 'prosody' in data:
+                    predictions = data['prosody'].get('predictions', [])
+                    if predictions and len(predictions) > 0:
+                        prediction = predictions[0]
+                        if 'emotions' in prediction:
+                            # Get timestamp from filename
+                            filename = json_file.stem
+                            parts = filename.replace('_emotions', '').split('_')
+                            if len(parts) >= 3:
+                                date_str = parts[1]
+                                time_str = parts[2]
+                                
+                                # Format the datetime
+                                year = date_str[:4]
+                                month = date_str[4:6]
+                                day = date_str[6:]
+                                hour = time_str[:2]
+                                minute = time_str[2:4]
+                                second = time_str[4:6]
+                                
+                                timestamp = datetime.strptime(f"{year}-{month}-{day} {hour}:{minute}:{second}", '%Y-%m-%d %H:%M:%S')
+                                formatted_timestamp = timestamp.strftime('%b %d, %I:%M %p')
+                                
+                                # Sort emotions by score and get top 3
+                                emotions = prediction['emotions']
+                                top_emotions = sorted(
+                                    emotions,
+                                    key=lambda x: x['score'],
+                                    reverse=True
+                                )[:3]
+                                
+                                results.append({
+                                    'timestamp': formatted_timestamp,
+                                    'emotions': top_emotions
+                                })
+            
+            except Exception as e:
+                logging.error(f"Error processing {json_file}: {str(e)}")
+                continue
+        
+        if not results:
+            return jsonify({
+                "error": "No valid emotion data found for analysis",
+                "timestamp": datetime.now().strftime("%I:%M %p")
+            })
+        
+        # Sort results by timestamp
+        results.sort(key=lambda x: datetime.strptime(x['timestamp'], '%b %d, %I:%M %p'))
+        
+        # Call Claude for insights
+        insights = get_emotion_insights(results)
+        
+        return jsonify({
+            "insights": insights,
+            "timestamp": datetime.now().strftime("%I:%M %p")
+        })
     
     except Exception as e:
         logging.error(f"Error getting insights: {str(e)}")

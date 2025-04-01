@@ -13,7 +13,7 @@
 
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=2070') no-repeat center center fixed;
+                        url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             color: #fff;
@@ -32,7 +32,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             padding: 2rem;
-            margin: 1rem;
         }
 
         .chart-container {
@@ -40,6 +39,17 @@
             height: 400px;
             width: 100%;
             margin-top: 2rem;
+            background: transparent !important;
+        }
+
+        #emotionChart {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        canvas {
+            background: transparent !important;
+            background-color: transparent !important;
         }
 
         .select-container {
@@ -51,7 +61,7 @@
         select {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
+            color: #E6F0FF;
             padding: 0.75rem;
             border-radius: 0.5rem;
             backdrop-filter: blur(5px);
@@ -134,12 +144,12 @@
 </head>
 <body class="bg-gray-900">
     <div class="container mx-auto px-4 py-8">
-        <div class="glass-card">
+        <div class="glass-card mb-8">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2">Hey, Geetika</h1>
+                    <h1 class="text-4xl font-bold mb-2 text-[#FFFFFF]">Hey, Geetika</h1>
                     <div class="h-2"></div>
-                    <p class="text-gray-300 subheader">Uncover authentic feelings that go beyond your spoken words. Ruby analyzes your emotional tone, speech pattern, and rhythm to help you become aware of emotions you may be feeling but not even realize that you are.</p>
+                    <p class="text-[#FFFFFF] subheader">Uncover authentic feelings that go beyond your spoken words. Ruby analyzes your emotional tone, speech pattern, and rhythm to help you become aware of emotions you may be feeling but not even realize that you are.</p>
                 </div>
                 <div class="select-container">
                     <select id="viewType" onchange="updateChart()" class="bg-transparent">
@@ -148,33 +158,36 @@
                 </div>
             </div>
 
-            <!-- Insights Card -->
-            <div class="glass-card mb-6" id="insightsCard" style="display: none;">
+            <div class="chart-container">
+                <canvas id="emotionChart"></canvas>
+                <div id="noDataMessage" class="absolute inset-0 flex items-center justify-center text-[#FFFFFF] text-lg" style="display: none;">
+                    No emotion data available for the selected time range
+                </div>
+            </div>
+
+            <div class="emotion-list mt-8" id="currentEmotions">
+            </div>
+
+            <!-- AI Insights Card -->
+            <div class="mt-8" id="insightsCard" style="display: none;">
                 <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-xl font-semibold">Emotional Insights</h2>
-                    <div class="text-xs text-gray-300" id="insightsTime"></div>
+                    <h2 class="text-2xl font-semibold text-[#FFFFFF]">AI-powered Insights into your Emotions</h2>
+                    <div class="text-xs text-[#FFFFFF]" id="insightsTime"></div>
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <h3 class="text-sm font-semibold mb-1.5 text-white/90 border-b border-white/10 pb-1">Summary</h3>
-                        <p class="text-sm text-white/80 leading-relaxed" id="emotionSummary"></p>
+                        <h3 class="text-base font-bold mb-1.5 text-[#FFFFFF] border-b border-white/10 pb-1">Summary</h3>
+                        <p class="text-sm text-[#FFFFFF] leading-relaxed" id="emotionSummary"></p>
                     </div>
                     <div>
-                        <h3 class="text-sm font-semibold mb-1.5 text-white/90 border-b border-white/10 pb-1">Insights</h3>
-                        <p class="text-sm text-white/80 leading-relaxed" id="actionableInsight"></p>
+                        <h3 class="text-base font-bold mb-1.5 text-[#FFFFFF] border-b border-white/10 pb-1">Insights</h3>
+                        <p class="text-sm text-[#FFFFFF] leading-relaxed" id="actionableInsight"></p>
                     </div>
                     <div>
-                        <h3 class="text-sm font-semibold mb-1.5 text-white/90 border-b border-white/10 pb-1">Journal Prompt</h3>
-                        <p class="text-sm text-white/80 leading-relaxed" id="journalPrompt"></p>
+                        <h3 class="text-base font-bold mb-1.5 text-[#FFFFFF] border-b border-white/10 pb-1">Journal Prompt</h3>
+                        <p class="text-sm text-[#FFFFFF] leading-relaxed" id="journalPrompt"></p>
                     </div>
                 </div>
-            </div>
-
-            <div class="chart-container">
-                <canvas id="emotionChart"></canvas>
-            </div>
-
-            <div class="emotion-list" id="currentEmotions">
             </div>
         </div>
     </div>
@@ -182,6 +195,18 @@
     <script>
         let chart = null;
         let emotionData = [];
+
+        // Function to filter data by time range
+        function filterDataByTimeRange(data) {
+            // For now, return all data since we don't have time range selection yet
+            return data;
+        }
+
+        // Function to filter data by emotions
+        function filterDataByEmotions(data) {
+            // For now, return all data since we don't have emotion filtering yet
+            return data;
+        }
 
         // Function to fetch emotion data
         async function fetchEmotionData() {
@@ -210,6 +235,11 @@
                 }
             } catch (error) {
                 console.error('Error fetching emotion data:', error);
+                const noDataMessage = document.getElementById('noDataMessage');
+                if (noDataMessage) {
+                    noDataMessage.style.display = 'flex';
+                    noDataMessage.textContent = 'Error loading emotion data';
+                }
             }
         }
 
@@ -260,7 +290,7 @@
                 header.className = 'flex items-center justify-between mb-4';
                 
                 const timestamp = document.createElement('h3');
-                timestamp.className = 'text-xl font-semibold text-white';
+                timestamp.className = 'text-xl font-semibold text-[#FFFFFF]';
                 timestamp.textContent = result.timestamp;
                 
                 // Create a summary ring showing the top emotion's intensity
@@ -288,11 +318,11 @@
                         colorDot.style.backgroundColor = getEmotionColor(emotion.name);
                         
                         const name = document.createElement('span');
-                        name.className = 'text-white/90';
+                        name.className = 'text-[#FFFFFF]';
                         name.textContent = emotion.name;
                         
                         const score = document.createElement('span');
-                        score.className = 'emotion-score text-white/70';
+                        score.className = 'emotion-score text-[#FFFFFF]';
                         score.textContent = `${Math.round(emotion.score * 100)}%`;
                         
                         emotionItem.appendChild(colorDot);
@@ -307,30 +337,69 @@
             });
         }
 
+        // Function to parse timestamp for sorting
+        function parseTimestamp(timestamp_str) {
+            try {
+                // Handle timestamps with date (e.g., "Mar 31, 3:28 PM")
+                if (timestamp_str.includes(',')) {
+                    return new Date(timestamp_str);
+                }
+                // Handle time-only timestamps (e.g., "3:28 PM")
+                const today = new Date();
+                const [time, period] = timestamp_str.split(' ');
+                const [hours, minutes] = time.split(':');
+                const date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                date.setHours(parseInt(hours) + (period === 'PM' ? 12 : 0), parseInt(minutes));
+                return date;
+            } catch (e) {
+                console.error('Error parsing timestamp:', e);
+                return new Date(0);
+            }
+        }
+
         // Function to create/update chart
         function createChart(data) {
-            console.log('Creating chart with data:', data);
-            if (!data || data.length === 0) {
-                console.log('No data available for chart');
-                return;
-            }
-
-            const canvas = document.getElementById('emotionChart');
-            if (!canvas) {
-                console.error('Could not find chart canvas element');
-                return;
-            }
-
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                console.error('Could not get 2d context from canvas');
-                return;
-            }
-
             try {
+                const noDataMessage = document.getElementById('noDataMessage');
+                if (!noDataMessage) {
+                    console.error('Could not find noDataMessage element');
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    noDataMessage.style.display = 'flex';
+                    return;
+                }
+                
+                noDataMessage.style.display = 'none';
+                
+                // Sort data by timestamp
+                data.sort((a, b) => parseTimestamp(a.timestamp) - parseTimestamp(b.timestamp));
+                
+                // Filter data based on time range and emotion filters
+                let filteredData = filterDataByTimeRange(data);
+                filteredData = filterDataByEmotions(filteredData);
+                
+                if (filteredData.length === 0) {
+                    noDataMessage.style.display = 'flex';
+                    return;
+                }
+                
+                const canvas = document.getElementById('emotionChart');
+                if (!canvas) {
+                    console.error('Could not find chart canvas element');
+                    return;
+                }
+
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    console.error('Could not get 2d context from canvas');
+                    return;
+                }
+
                 // Get all unique emotions across all timestamps
                 const allEmotions = new Set();
-                data.forEach(d => {
+                filteredData.forEach(d => {
                     if (d.emotions) {
                         d.emotions.forEach(e => e.name && allEmotions.add(e.name));
                     }
@@ -338,13 +407,18 @@
                 const emotionsList = Array.from(allEmotions);
 
                 // Create line chart
-                createLineChart(ctx, data, emotionsList);
+                createLineChart(ctx, filteredData, emotionsList, canvas);
             } catch (error) {
-                console.error('Error creating chart:', error);
+                console.error('Error in createChart:', error);
+                const noDataMessage = document.getElementById('noDataMessage');
+                if (noDataMessage) {
+                    noDataMessage.style.display = 'flex';
+                    noDataMessage.textContent = 'Error loading chart data';
+                }
             }
         }
 
-        function createLineChart(ctx, data, allEmotions) {
+        function createLineChart(ctx, data, allEmotions, canvas) {
             const labels = data.map(d => d.timestamp);
             const datasets = [];
             const colors = [
@@ -368,14 +442,13 @@
                 datasets.push({
                     label: emotion,
                     data: emotionData,
-                    backgroundColor: colors[index % colors.length],
                     borderColor: colors[index % colors.length],
+                    backgroundColor: `rgba(220, 241, 255, 0.1)`,  // Subtle bluish-white fill
                     borderWidth: 2,
-                    fill: true,
+                    fill: true,  // Enable fill
                     tension: 0.4,
                     pointRadius: 4,
-                    pointHoverRadius: 6,
-                    backgroundColor: `${colors[index % colors.length]}33`, // Add transparent fill
+                    pointHoverRadius: 6
                 });
             });
 
@@ -394,6 +467,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    backgroundColor: 'transparent',
                     interaction: {
                         mode: 'nearest',
                         axis: 'x',
@@ -403,12 +477,22 @@
                         y: {
                             beginAtZero: true,
                             max: 1.0,
+                            title: {
+                                display: true,
+                                text: 'Emotion Intensity',
+                                color: '#FFFFFF',
+                                font: {
+                                    size: 14,
+                                    family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                                }
+                            },
                             grid: {
-                                color: 'rgba(255, 255, 255, 0.1)',
-                                drawBorder: false
+                                color: 'rgba(230, 240, 255, 0.1)',
+                                drawBorder: false,
+                                display: true
                             },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)',
+                                color: '#FFFFFF',
                                 font: {
                                     size: 12,
                                     family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
@@ -420,18 +504,19 @@
                         },
                         x: {
                             grid: {
-                                color: 'rgba(255, 255, 255, 0.1)',
-                                drawBorder: false
+                                color: 'rgba(230, 240, 255, 0.1)',
+                                drawBorder: false,
+                                display: true
                             },
                             ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)',
+                                color: '#FFFFFF',
                                 font: {
                                     size: 12,
                                     family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
                                 },
-                                maxRotation: 0,
+                                maxRotation: 45,
                                 autoSkip: true,
-                                maxTicksLimit: 8
+                                maxTicksLimit: 12
                             }
                         }
                     },
@@ -441,9 +526,9 @@
                             labels: {
                                 usePointStyle: true,
                                 padding: 20,
-                                color: 'rgba(255, 255, 255, 0.9)',
+                                color: '#FFFFFF',
                                 font: {
-                                    size: 12,
+                                    size: 14,
                                     family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
                                 }
                             }
@@ -453,8 +538,8 @@
                         },
                         tooltip: {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: 'rgba(255, 255, 255, 0.9)',
-                            bodyColor: 'rgba(255, 255, 255, 0.9)',
+                            titleColor: '#FFFFFF',
+                            bodyColor: '#FFFFFF',
                             bodyFont: {
                                 family: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
                             },
@@ -475,21 +560,6 @@
                                 label: function(context) {
                                     return `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`;
                                 }
-                            }
-                        },
-                        zoom: {
-                            pan: {
-                                enabled: true,
-                                mode: 'x'
-                            },
-                            zoom: {
-                                wheel: {
-                                    enabled: true
-                                },
-                                pinch: {
-                                    enabled: true
-                                },
-                                mode: 'x'
                             }
                         }
                     }
