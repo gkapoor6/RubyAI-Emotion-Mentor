@@ -9,7 +9,7 @@ It processes audio recordings from the Omi wearable device using the Hume AI SDK
 
 ## Features
 
-- Real-time audio reception every 5-seconds from the Omi wearable device
+- Real-time audio reception from the Omi wearable device
 - Emotion analysis using Hume AI's prosody model
 - Web interface for viewing emotion analysis results
   
