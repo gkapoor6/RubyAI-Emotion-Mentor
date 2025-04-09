@@ -1,7 +1,8 @@
 # Ruby AI - Your Emotion Mentor
 
 Ruby analyzes your emotional tone, speech pattern, and rhythm to help you become aware of emotions you may be feeling beyond your awareness. 
-View 20-second demo here: https://www.loom.com/share/b7afbf710b4c4b668d48567cab5957cb?sid=3abbfdd1-a3c3-48ee-8abd-80ff26237d68 
+View Loom Demo: [
+](https://www.loom.com/share/bf5ea169acd34948b1b6df09bdcfd66c?sid=a740d5aa-da45-4301-8a0d-363906583407)
 
 ![Emotions Graph](docs/RubyA.png)
 
