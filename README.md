@@ -7,7 +7,7 @@ It processes audio recordings from the Omi wearable device using Hume AI to meas
 
 ## Features
 
+- Emotion analysis using voice data
+- Personalized emotion guidance, including a daily summary, actionable insights, and reflection prompts
 - Real-time audio reception from the Omi wearable device
-- Emotion analysis using Hume AI's Expression Measurement API
-- Personalized emotion guidance, including a daily summary, actionable insights, and reflection prompts.
   
